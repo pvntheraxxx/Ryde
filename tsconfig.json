@@ -3,10 +3,17 @@
   "compilerOptions": {
     "strict": true,
     "jsx": "react-jsx",
-
     "baseUrl": ".",
     "paths": {
-      "~/*": ["src/*"]
+      "@/*": [
+        "./*"
+      ]
     }
-  }
+  },
+  "include": [
+    "types", // 👈 подключает все *.d.ts из папки types
+    "**/*.ts",
+    "**/*.tsx",
+    "nativewind-env.d.ts"
+  ]
 }
