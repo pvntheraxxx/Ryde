@@ -5,15 +5,8 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     }
   },
-  "include": [
-    "types", // 👈 подключает все *.d.ts из папки types
-    "**/*.ts",
-    "**/*.tsx",
-    "nativewind-env.d.ts"
-  ]
+  "include": ["types", "**/*.ts", "**/*.tsx", "nativewind-env.d.ts"]
 }
