@@ -1,5 +1,5 @@
 {
-  "name": "uber-clone",
+  "name": "uber-c",
   "version": "1.0.0",
   "scripts": {
     "android": "expo start --android",
@@ -34,6 +34,6 @@
     "tailwindcss": "^3.4.17",
     "typescript": "~5.8.3"
   },
-  "main": "node_modules/expo/AppEntry.js",
+  "main": "expo-router/entry",
   "private": true
 }

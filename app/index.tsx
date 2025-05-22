@@ -1,11 +1,9 @@
-import { Text, View } from 'react-native';
+import { View, Text } from 'react-native';
 
-const Home = () => {
+export default function Home() {
   return (
     <View className="flex-1 items-center justify-center bg-black">
-      <Text className="text-2xl font-bold text-white">✅ NativeWind работает!</Text>
+      <Text className="text-2xl font-bold text-rose-600">✅ NativeWind работает!</Text>
     </View>
   );
-};
-
-export default Home;
+}
