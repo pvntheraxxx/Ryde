@@ -1,9 +1,12 @@
 import { View, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function Home() {
+const Home = () => {
   return (
-    <View className="flex-1 items-center justify-center bg-black">
-      <Text className="text-2xl font-bold text-rose-600">✅ NativeWind работает!</Text>
-    </View>
+    <SafeAreaView>
+      <Text>Home</Text>
+    </SafeAreaView>
   );
-}
+};
+
+export default Home;
