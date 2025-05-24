@@ -1,12 +1,12 @@
-import { Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+// import { Text } from 'react-native';
+// import { SafeAreaView } from 'react-native-safe-area-context';
 
-const History = () => {
-  return (
-    <SafeAreaView>
-      <Text>History</Text>
-    </SafeAreaView>
-  );
-};
+// const History = () => {
+//   return (
+//     <SafeAreaView>
+//       <Text>History</Text>
+//     </SafeAreaView>
+//   );
+// };
 
-export default History;
+// export default History;
