@@ -13,6 +13,7 @@
   "dependencies": {
     "@clerk/clerk-expo": "^2.11.8",
     "@expo/metro-runtime": "~5.0.4",
+    "@neondatabase/serverless": "^1.0.0",
     "expo": "^53.0.9",
     "expo-font": "~13.3.1",
     "expo-local-authentication": "^16.0.4",

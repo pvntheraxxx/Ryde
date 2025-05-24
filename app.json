@@ -5,7 +5,8 @@
     "version": "1.0.0",
     "web": {
       "favicon": "./assets/images/favicon.png",
-      "bundler": "metro"
+      "bundler": "metro",
+      "output": "server"
     },
     "experiments": {
       "tsconfigPaths": true
@@ -31,6 +32,9 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       }
+    },
+    "extra": {
+      "origin": "https://uber.com/"
     }
   }
 }
