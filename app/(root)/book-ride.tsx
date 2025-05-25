@@ -1,12 +1,12 @@
 import { useUser } from '@clerk/clerk-expo';
-import { Image, Text, View } from 'react-native';
 import { StripeProvider } from '@stripe/stripe-react-native';
+import { Image, Text, View } from 'react-native';
 
+import Payment from '@/components/Payment';
 import RideLayout from '@/components/RideLayout';
 import { icons } from '@/constants';
 import { formatTime } from '@/lib/utils';
 import { useDriverStore, useLocationStore } from '@/store';
-import Payment from '@/components/Payment';
 
 const BookRide = () => {
   const { user } = useUser();
@@ -20,7 +20,7 @@ const BookRide = () => {
       publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY!}
       merchantIdentifier="merchant.com.uber"
       urlScheme="myapp">
-      <RideLayout title="Book Ride" snapPoints={['65%', '85%']}>
+      <RideLayout title="Book Ride">
         <>
           <Text className="mb-3 font-JakartaSemiBold text-xl">Ride Information</Text>
 
@@ -51,7 +51,7 @@ const BookRide = () => {
             <View className="flex w-full flex-row items-center justify-between border-b border-white py-3">
               <Text className="font-JakartaRegular text-lg">Pickup Time</Text>
               <Text className="font-JakartaRegular text-lg">
-                {formatTime(driverDetails?.time || 5!)}
+                {formatTime(driverDetails?.time!)}
               </Text>
             </View>
 
@@ -76,9 +76,9 @@ const BookRide = () => {
           <Payment
             fullName={user?.fullName!}
             email={user?.emailAddresses[0].emailAddress!}
-            amount={driverDetails?.price}
+            amount={driverDetails?.price!}
             driverId={driverDetails?.id}
-            rideTime={driverDetails?.time}
+            rideTime={driverDetails?.time!}
           />
         </>
       </RideLayout>
