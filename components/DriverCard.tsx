@@ -4,8 +4,17 @@ import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { icons } from '@/constants';
 import { formatTime } from '@/lib/utils';
 import { DriverCardProps } from '@/types/type';
+import i18n from '@/i18n';
+import { useTranslation } from 'react-i18next';
 
 const DriverCard = ({ item, selected, setSelected }: DriverCardProps) => {
+  const { t } = useTranslation();
+
+  const fullName =
+    i18n.language === 'ru'
+      ? `${item.first_name_ru ?? item.first_name} ${item.last_name_ru ?? item.last_name}`
+      : `${item.first_name} ${item.last_name}`;
+
   return (
     <TouchableOpacity
       onPress={setSelected}
@@ -16,11 +25,11 @@ const DriverCard = ({ item, selected, setSelected }: DriverCardProps) => {
 
       <View className="mx-3 flex flex-1 flex-col items-start justify-center">
         <View className="mb-1 flex flex-row items-center justify-start">
-          <Text className="font-JakartaRegular text-lg">{item.title}</Text>
+          <Text className="font-JakartaRegular text-lg">{fullName}</Text>
 
           <View className="ml-2 flex flex-row items-center space-x-1">
             <Image source={icons.star} className="h-3.5 w-3.5" />
-            <Text className="font-JakartaRegular text-sm">4</Text>
+            <Text className="font-JakartaRegular text-sm">{item.rating}</Text>
           </View>
         </View>
 
@@ -39,7 +48,7 @@ const DriverCard = ({ item, selected, setSelected }: DriverCardProps) => {
           <Text className="font-JakartaRegular mx-1 text-sm text-general-800">|</Text>
 
           <Text className="font-JakartaRegular text-sm text-general-800">
-            {item.car_seats} seats
+            {t('driver.seats', { count: item.car_seats })}
           </Text>
         </View>
       </View>
