@@ -1,4 +1,5 @@
 import { ImageSourcePropType } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 export const images = {
   onboarding1: require('@/assets/images/onboarding1.png'),
@@ -41,28 +42,35 @@ export const icons = {
 
 interface OnboardingItem {
   id: number;
-  title: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
+  image: ImageSourcePropType;
+}
+
+interface OnboardingItem {
+  id: number;
+  titleKey: string;
+  descriptionKey: string;
   image: ImageSourcePropType;
 }
 
 export const onboarding: OnboardingItem[] = [
   {
     id: 1,
-    title: 'The perfect ride is just a tap away!',
-    description: 'Your journey begins with Ryde. Find your ideal ride effortlessly.',
+    titleKey: 'onboarding.step1.title',
+    descriptionKey: 'onboarding.step1.description',
     image: images.onboarding1,
   },
   {
     id: 2,
-    title: 'Best car in your hands with Ryde',
-    description: 'Discover the convenience of finding your perfect ride with Ryde',
+    titleKey: 'onboarding.step2.title',
+    descriptionKey: 'onboarding.step2.description',
     image: images.onboarding2,
   },
   {
     id: 3,
-    title: "Your ride, your way. Let's go!",
-    description: 'Enter your destination, sit back, and let us take care of the rest.',
+    titleKey: 'onboarding.step3.title',
+    descriptionKey: 'onboarding.step3.description',
     image: images.onboarding3,
   },
 ];

@@ -7,8 +7,10 @@ import { useCallback, useState } from 'react';
 import { Link, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSignIn } from '@clerk/clerk-expo';
+import { useTranslation } from 'react-i18next';
 
 const SignIn = () => {
+  const { t } = useTranslation();
   const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
 
@@ -31,13 +33,14 @@ const SignIn = () => {
         router.replace('/(root)/(tabs)/home');
       } else {
         console.log(JSON.stringify(signInAttempt, null, 2));
-        Alert.alert('Error', 'Log in failed. Please try again.');
+        Alert.alert(t('signin.error'), t('signin.failed'));
       }
     } catch (err: any) {
       console.log(JSON.stringify(err, null, 2));
-      Alert.alert('Error', err.errors[0].longMessage);
+      Alert.alert(t('signin.error'), err.errors[0].longMessage);
     }
   }, [isLoaded, form]);
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <KeyboardAvoidingView
@@ -49,11 +52,15 @@ const SignIn = () => {
             <View className="relative h-[250px] w-full">
               <Image source={images.signUpCar} className="z-0 h-[250px] w-full" />
             </View>
-            <Text className="font-JakartaSemiBold text-2xl text-black">Welcome 👋</Text>
+
+            <Text className="mt-2 px-5 font-JakartaSemiBold text-2xl text-black">
+              {t('signin.title')}
+            </Text>
+
             <View className="p-5">
               <InputField
-                label="Email"
-                placeholder="Enter your email"
+                label={t('signin.email.label')}
+                placeholder={t('signin.email.placeholder')}
                 icon={icons.email}
                 value={form.email}
                 onChangeText={(value) =>
@@ -63,9 +70,10 @@ const SignIn = () => {
                   })
                 }
               />
+
               <InputField
-                label="Password"
-                placeholder="Enter your password"
+                label={t('signin.password.label')}
+                placeholder={t('signin.password.placeholder')}
                 icon={icons.lock}
                 secureTextEntry={true}
                 value={form.password}
@@ -77,16 +85,15 @@ const SignIn = () => {
                 }
               />
 
-              <CustomButton title="Sign In" onPress={onSignInPress} className="mt-6" />
+              <CustomButton title={t('signin.button')} onPress={onSignInPress} className="mt-6" />
 
               <OAuth />
 
               <Link href="/sign-up" className="mt-10 text-center text-lg text-general-200">
-                <Text>Do not have an account?</Text>
-                <Text className="text-primary-500">Sign Up</Text>
+                <Text>{t('signin.footer.question')} </Text>
+                <Text className="text-primary-500">{t('signin.footer.link')}</Text>
               </Link>
             </View>
-            {/* Verification Modal */}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

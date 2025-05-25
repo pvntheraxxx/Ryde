@@ -18,11 +18,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSignUp } from '@clerk/clerk-expo';
 import ReactNativeModal from 'react-native-modal';
 import { fetchAPI } from '@/lib/fetch';
+import { useTranslation } from 'react-i18next';
 
 const SignUp = () => {
+  const { t } = useTranslation();
   const { isLoaded, signUp, setActive } = useSignUp();
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
-
   const router = useRouter();
 
   const [form, setForm] = useState({
@@ -38,9 +39,7 @@ const SignUp = () => {
   });
 
   const onSignUpPress = async () => {
-    if (!isLoaded) {
-      return;
-    }
+    if (!isLoaded) return;
 
     try {
       await signUp.create({
@@ -50,11 +49,7 @@ const SignUp = () => {
 
       await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
 
-      setVerification({
-        ...verification,
-
-        state: 'pending',
-      });
+      setVerification({ ...verification, state: 'pending' });
     } catch (err: any) {
       Alert.alert('Error', err.errors[0].longMessage);
     }
@@ -107,11 +102,14 @@ const SignUp = () => {
             <View className="relative h-[250px] w-full">
               <Image source={images.signUpCar} className="z-0 h-[250px] w-full" />
             </View>
-            <Text className="font-JakartaSemiBold text-2xl text-black">Create Your Account</Text>
+            <Text className="mt-2 px-5 font-JakartaSemiBold text-2xl text-black">
+              {t('signup.title')}
+            </Text>
+
             <View className="p-5">
               <InputField
-                label="Name"
-                placeholder="Enter your name"
+                label={t('signup.name.label')}
+                placeholder={t('signup.name.placeholder')}
                 icon={icons.person}
                 value={form.name}
                 onChangeText={(value) =>
@@ -122,8 +120,8 @@ const SignUp = () => {
                 }
               />
               <InputField
-                label="Email"
-                placeholder="Enter your email"
+                label={t('signup.email.label')}
+                placeholder={t('signup.email.placeholder')}
                 icon={icons.email}
                 value={form.email}
                 onChangeText={(value) =>
@@ -134,8 +132,8 @@ const SignUp = () => {
                 }
               />
               <InputField
-                label="Password"
-                placeholder="Enter your password"
+                label={t('signup.password.label')}
+                placeholder={t('signup.password.placeholder')}
                 icon={icons.lock}
                 secureTextEntry={true}
                 value={form.password}
@@ -147,13 +145,13 @@ const SignUp = () => {
                 }
               />
 
-              <CustomButton title="Sign Up" onPress={onSignUpPress} className="mt-6" />
+              <CustomButton title={t('signup.button')} onPress={onSignUpPress} className="mt-6" />
 
               <OAuth />
 
               <Link href="/sign-in" className="mt-10 text-center text-lg text-general-200">
-                <Text>Already have an account?{''}</Text>
-                <Text className="text-primary-500">Log In</Text>
+                <Text>{t('signup.footer.question')} </Text>
+                <Text className="text-primary-500">{t('signup.footer.link')}</Text>
               </Link>
             </View>
           </View>
@@ -164,14 +162,16 @@ const SignUp = () => {
               if (verification.state === 'success') setShowSuccessModal(true);
             }}>
             <View className="min-h-[300px] rounded-2xl bg-white px-7 py-9">
-              <Text className="mb-2 font-JakartaExtraBold text-2xl">Verification</Text>
+              <Text className="mb-2 font-JakartaExtraBold text-2xl">
+                {t('signup.verification.title')}
+              </Text>
               <Text className="mb-5 font-Jakarta">
-                We have sent a verification code to {form.email}
+                {t('signup.verification.subtitle', { email: form.email })}
               </Text>
               <InputField
-                label="Code"
+                label={t('signup.verification.code.label')}
                 icon={icons.lock}
-                placeholder="12345"
+                placeholder={t('signup.verification.code.placeholder')}
                 value={verification.code}
                 keyboardType="numeric"
                 onChangeText={(code) => setVerification({ ...verification, code })}
@@ -181,7 +181,7 @@ const SignUp = () => {
               )}
 
               <CustomButton
-                title="Verify Email"
+                title={t('signup.verification.button')}
                 onPress={onPressVerify}
                 className="mt-5 bg-success-500"
               />
@@ -199,13 +199,15 @@ const SignUp = () => {
               className="items-center justify-center">
               <View className="w-4/5 max-w-[320px] rounded-2xl bg-white px-7 py-9">
                 <Image source={images.check} className="mx-auto my-5 h-[110px] w-[110px]" />
-                <Text className="text-center font-JakartaBold text-3xl">Verified</Text>
+                <Text className="text-center font-JakartaBold text-3xl">
+                  {t('signup.success.title')}
+                </Text>
                 <Text className="mt-2 text-center font-Jakarta text-base text-gray-400">
-                  You have successfully verified your account.
+                  {t('signup.success.subtitle')}
                 </Text>
 
                 <CustomButton
-                  title="Browse Home"
+                  title={t('signup.success.button')}
                   onPress={() => {
                     setShowSuccessModal(false);
                     router.push('/(root)/(tabs)/home');

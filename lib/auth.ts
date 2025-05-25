@@ -2,6 +2,7 @@ import * as Linking from 'expo-linking';
 import * as SecureStore from 'expo-secure-store';
 
 import { fetchAPI } from '@/lib/fetch';
+import i18n from '@/i18n';
 
 export const tokenCache = {
   async getToken(key: string) {
@@ -19,6 +20,7 @@ export const tokenCache = {
       return null;
     }
   },
+
   async saveToken(key: string, value: string) {
     try {
       return SecureStore.setItemAsync(key, value);
@@ -34,39 +36,37 @@ export const googleOAuth = async (startOAuthFlow: any) => {
       redirectUrl: Linking.createURL('/(root)/(tabs)/home'),
     });
 
-    if (createdSessionId) {
-      if (setActive) {
-        await setActive({ session: createdSessionId });
+    if (createdSessionId && setActive) {
+      await setActive({ session: createdSessionId });
 
-        if (signUp.createdUserId) {
-          await fetchAPI('/(api)/user', {
-            method: 'POST',
-            body: JSON.stringify({
-              name: `${signUp.firstName} ${signUp.lastName}`,
-              email: signUp.emailAddress,
-              clerkId: signUp.createdUserId,
-            }),
-          });
-        }
-
-        return {
-          success: true,
-          code: 'success',
-          message: 'You have successfully signed in with Google',
-        };
+      if (signUp.createdUserId) {
+        await fetchAPI('/(api)/user', {
+          method: 'POST',
+          body: JSON.stringify({
+            name: `${signUp.firstName} ${signUp.lastName}`,
+            email: signUp.emailAddress,
+            clerkId: signUp.createdUserId,
+          }),
+        });
       }
+
+      return {
+        success: true,
+        code: 'success',
+        message: i18n.t('oauth.success'),
+      };
     }
 
     return {
       success: false,
-      message: 'An error occurred while signing in with Google',
+      message: i18n.t('oauth.error'),
     };
   } catch (err: any) {
     console.error(err);
     return {
       success: false,
       code: err.code,
-      message: err?.errors[0]?.longMessage,
+      message: err?.errors?.[0]?.longMessage || i18n.t('oauth.error'),
     };
   }
 };
