@@ -15,15 +15,12 @@ import OAuth from '@/components/OAuth';
 import { useState } from 'react';
 import { Link, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useSignUp } from '@clerk/clerk-expo';
 import ReactNativeModal from 'react-native-modal';
-import { fetchAPI } from '@/lib/fetch';
 import { useTranslation } from 'react-i18next';
+import { supabase } from '@/lib/supabase';
 
 const SignUp = () => {
   const { t } = useTranslation();
-  const { isLoaded, signUp, setActive } = useSignUp();
-  const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
   const router = useRouter();
 
   const [form, setForm] = useState({
@@ -32,63 +29,36 @@ const SignUp = () => {
     password: '',
   });
 
-  const [verification, setVerification] = useState({
-    state: 'default',
-    error: '',
-    code: '',
-  });
+  const [verificationState, setVerificationState] = useState<
+    'default' | 'pending' | 'success' | 'failed'
+  >('default');
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const onSignUpPress = async () => {
-    if (!isLoaded) return;
-
-    try {
-      await signUp.create({
-        emailAddress: form.email,
-        password: form.password,
-      });
-
-      await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
-
-      setVerification({ ...verification, state: 'pending' });
-    } catch (err: any) {
-      Alert.alert('Error', err.errors[0].longMessage);
+    if (!form.email || !form.password || !form.name) {
+      Alert.alert('Ошибка', 'Заполните все поля');
+      return;
     }
-  };
 
-  const onPressVerify = async () => {
-    if (!isLoaded) return;
+    const { data, error } = await supabase.auth.signUp({
+      email: form.email,
+      password: form.password,
+      options: {
+        data: { name: form.name },
+        emailRedirectTo: 'https://your-site.com/welcome', // можно убрать
+      },
+    });
 
-    try {
-      const completeSignUp = await signUp.attemptEmailAddressVerification({
-        code: verification.code,
-      });
-
-      if (completeSignUp.status === 'complete') {
-        await fetchAPI('/(api)/user', {
-          method: 'POST',
-          body: JSON.stringify({
-            name: form.name,
-            email: form.email,
-            clerkId: completeSignUp.createdUserId,
-          }),
-        });
-
-        await setActive({ session: completeSignUp.createdSessionId });
-        setVerification({ ...verification, state: 'success' });
-      } else {
-        setVerification({
-          ...verification,
-          error: 'Verification failed.',
-          state: 'failed',
-        });
-      }
-    } catch (err: any) {
-      setVerification({
-        ...verification,
-        error: err.errors[0].longMessage,
-        state: 'failed',
-      });
+    if (data?.user) {
+      console.log('Регистрация прошла успешно, user id:', data.user.id);
     }
+
+    if (error) {
+      Alert.alert('Ошибка', error.message);
+      return;
+    }
+
+    setVerificationState('pending');
   };
 
   return (
@@ -112,24 +82,14 @@ const SignUp = () => {
                 placeholder={t('signup.name.placeholder')}
                 icon={icons.person}
                 value={form.name}
-                onChangeText={(value) =>
-                  setForm({
-                    ...form,
-                    name: value,
-                  })
-                }
+                onChangeText={(value) => setForm({ ...form, name: value })}
               />
               <InputField
                 label={t('signup.email.label')}
                 placeholder={t('signup.email.placeholder')}
                 icon={icons.email}
                 value={form.email}
-                onChangeText={(value) =>
-                  setForm({
-                    ...form,
-                    email: value,
-                  })
-                }
+                onChangeText={(value) => setForm({ ...form, email: value })}
               />
               <InputField
                 label={t('signup.password.label')}
@@ -137,12 +97,7 @@ const SignUp = () => {
                 icon={icons.lock}
                 secureTextEntry={true}
                 value={form.password}
-                onChangeText={(value) =>
-                  setForm({
-                    ...form,
-                    password: value,
-                  })
-                }
+                onChangeText={(value) => setForm({ ...form, password: value })}
               />
 
               <CustomButton title={t('signup.button')} onPress={onSignUpPress} className="mt-6" />
@@ -156,11 +111,10 @@ const SignUp = () => {
             </View>
           </View>
 
+          {/* Модалка - Подтвердите email */}
           <ReactNativeModal
-            isVisible={verification.state === 'pending'}
-            onModalHide={() => {
-              if (verification.state === 'success') setShowSuccessModal(true);
-            }}>
+            isVisible={verificationState === 'pending'}
+            onBackdropPress={() => setVerificationState('default')}>
             <View className="min-h-[300px] rounded-2xl bg-white px-7 py-9">
               <Text className="mb-2 font-JakartaExtraBold text-2xl">
                 {t('signup.verification.title')}
@@ -168,26 +122,17 @@ const SignUp = () => {
               <Text className="mb-5 font-Jakarta">
                 {t('signup.verification.subtitle', { email: form.email })}
               </Text>
-              <InputField
-                label={t('signup.verification.code.label')}
-                icon={icons.lock}
-                placeholder={t('signup.verification.code.placeholder')}
-                value={verification.code}
-                keyboardType="numeric"
-                onChangeText={(code) => setVerification({ ...verification, code })}
-              />
-              {verification.error && (
-                <Text className="mt-1 text-sm text-red-500">{verification.error}</Text>
-              )}
-
               <CustomButton
-                title={t('signup.verification.button')}
-                onPress={onPressVerify}
-                className="mt-5 bg-success-500"
+                title="ОК"
+                onPress={() => {
+                  setVerificationState('success');
+                  setShowSuccessModal(true);
+                }}
               />
             </View>
           </ReactNativeModal>
 
+          {/* Модалка - Успешно */}
           <ReactNativeModal
             isVisible={showSuccessModal}
             style={{ margin: 0 }}
@@ -210,7 +155,7 @@ const SignUp = () => {
                   title={t('signup.success.button')}
                   onPress={() => {
                     setShowSuccessModal(false);
-                    router.push('/(root)/(tabs)/home');
+                    router.push('/(auth)/sign-in');
                   }}
                   className="mt-5"
                 />
